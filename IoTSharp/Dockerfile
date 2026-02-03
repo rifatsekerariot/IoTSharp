@@ -65,8 +65,9 @@ FROM build AS publish
 RUN dotnet publish "./IoTSharp.csproj" --no-restore   -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
-USER app
 WORKDIR /app
-VOLUME ["/app/security/"]
 COPY --from=publish /app/publish .
+RUN mkdir -p /app/.data && chown -R app:app /app
+USER app
+VOLUME ["/app/security/"]
 ENTRYPOINT ["dotnet", "IoTSharp.dll"]
